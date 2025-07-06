@@ -31,8 +31,25 @@ async function run() {
 
     const parcelCollection = client.db("parcelDB").collection("parcels");
 
+    // parcels api
+
+    // parcels GET API with email filter + sorting
+    app.get('/parcels', async (req, res) => {
+      try {
+        const { email } = req.query;
+        const query = email ? { createdBy: email } : {};
+        const parcels = await parcelCollection.find(query).sort({ createdAt: -1 }).toArray();
+        res.json(parcels);
+      } catch (error) {
+        console.error('Error fetching parcels:', error);
+        res.status(500).json({ error: 'Failed to fetch parcels' });
+      }
+    });
+
+
+
+
     // post api for parcels
-    // Add this inside the startServer() function, after db setup
 
     app.post("/parcels", async (req, res) => {
     try {
@@ -53,13 +70,6 @@ async function run() {
         console.error("Error adding parcel:", error);
         res.status(500).json({ message: "Internal server error" });
     }
-    });
-
-
-    // get api for parcels
-    app.get("/parcels", async (req, res) => {
-      const result = await parcelCollection.find().toArray();
-      res.send(result);
     });
 
 
