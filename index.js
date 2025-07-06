@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require("dotenv").config();
 
 
@@ -71,6 +71,21 @@ async function run() {
         res.status(500).json({ message: "Internal server error" });
     }
     });
+
+    // delete api for parcels
+    app.delete('/parcels/:id', async (req, res) => {
+      const id = req.params.id;
+
+      try {
+        const result = await parcelCollection.deleteOne({ _id: new ObjectId(id) });
+
+        res.send(result);
+      } catch (error) {
+        console.error('Delete error:', error);
+        res.status(500).send({ message: 'Internal server error' });
+      }
+    });
+
 
 
     // Send a ping to confirm a successful connection
